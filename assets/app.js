@@ -81,11 +81,15 @@ function toast(html) {
 }
 
 /* ------------------------------------------------------------ тема */
-$('#theme-toggle').addEventListener('click', () => {
+const themeBtn = $('#theme-toggle');
+const paintTheme = () => themeBtn.setAttribute('aria-pressed', String(document.documentElement.dataset.theme === 'dark'));
+themeBtn.addEventListener('click', () => {
   const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
   document.documentElement.dataset.theme = next;
   try { localStorage.setItem('eco-theme', next); } catch (e) {}
+  paintTheme();
 });
+paintTheme();
 
 /* ------------------------------------------------------------ страница */
 renderMath($('#app'));

@@ -17,7 +17,13 @@
 <header class="hero">
   <div class="hero-inner">
     <div class="hero-text">
-      <span class="kicker">ЕГЭ · профильная математика</span>
+      <div class="hero-top">
+        <span class="kicker">ЕГЭ · профильная математика</span>
+        <button class="theme-switch" type="button" id="theme-toggle" aria-label="Тёмная тема" aria-pressed="false">
+          <span class="ts-opt ts-light">{{ICON_SUN}}<span>Светлая</span></span>
+          <span class="ts-opt ts-dark">{{ICON_MOON}}<span>Тёмная</span></span>
+        </button>
+      </div>
       <h1>Экономическая задача</h1>
       <p class="hero-sub">Кредиты, вклады и оптимизация — 50 задач с разбором. Решай сам или с ИИ-репетитором: он сначала спросит теорию, поймёт твой уровень и поведёт по шагам.</p>
       <div class="hero-actions">
@@ -25,7 +31,6 @@
         <button class="btn btn-glass" type="button" id="open-profile"><span class="level-dot" id="level-dot"></span>Мой уровень</button>
         <button class="btn btn-glass" type="button" id="open-settings">{{ICON_GEAR}}Настройки ИИ</button>
         <a class="btn btn-glass" href="cheatsheet.html" target="_blank" rel="noopener">{{ICON_DOC}}Шпаргалка PDF</a>
-        <button class="btn btn-glass btn-icon" type="button" id="theme-toggle" aria-label="Переключить тему" title="Тёмная / светлая тема"><span class="ico-moon">{{ICON_MOON}}</span><span class="ico-sun">{{ICON_SUN}}</span></button>
       </div>
     </div>
     <div class="hero-card">

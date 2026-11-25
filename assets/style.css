@@ -242,11 +242,6 @@ th{background:var(--mint);font-weight:700;color:var(--pine)}
 .app-footer .made-by b{color:var(--lime)}
 
 /* ---------- переключатель темы ---------- */
-.btn-icon{padding:12px;width:46px;justify-content:center}
-.ico-sun{display:none}
-[data-theme="dark"] .ico-sun{display:inline-flex}
-[data-theme="dark"] .ico-moon{display:none}
-.btn-icon span{display:inline-flex}
 
 /* ---------- тёмная тема ---------- */
 [data-theme="dark"]{
@@ -373,3 +368,12 @@ th{background:var(--mint);font-weight:700;color:var(--pine)}
 .sim-open small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
 .sim-num{flex:none;padding:8px 11px;border-radius:12px;background:var(--lime);color:var(--forest);font:700 14px/1 var(--head);white-space:nowrap}
 .sim-source{margin:0 4px 12px}
+
+/* переключатель темы */
+.hero-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.theme-switch{display:inline-flex;gap:2px;padding:4px;border:0;border-radius:999px;background:#ffffff14;box-shadow:inset 0 0 0 1px #ffffff2e;color:#d5e6dc;cursor:pointer;font:inherit}
+.theme-switch:hover{background:#ffffff1f}
+.ts-opt{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;font-weight:700;font-size:13px;line-height:1;transition:background .2s,color .2s}
+.ts-opt svg{width:16px;height:16px;flex:none}
+.theme-switch[aria-pressed="false"] .ts-light,.theme-switch[aria-pressed="true"] .ts-dark{background:var(--lime);color:var(--forest)}
+@media(max-width:400px){.ts-opt{padding:7px 10px}.ts-opt>span{display:none}}
