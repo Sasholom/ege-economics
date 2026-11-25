@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Экономическая задача — ЕГЭ профиль</title>
+<meta name="description" content="50 экономических задач ЕГЭ по профильной математике: теория, решения и ИИ-репетитор.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<main id="app">
+<header class="hero">
+  <div class="hero-heading"><h1>Экономическая задача</h1><span class="year-chip">ЕГЭ профиль</span></div>
+  <p class="hero-sub">50 задач в 11 типах: кредиты, вклады, оптимизация. Решайте сами или с ИИ-репетитором — он сначала проверит, что вы знаете по теме, и подстроится под ваш уровень.</p>
+  <div class="toolbar">
+    <button class="files-button primary" type="button" id="free-task">{{ICON_CHAT}}Своя задача с репетитором</button>
+    <div class="toolbar-right">
+      <button class="files-button" type="button" id="open-profile"><span class="level-dot" id="level-dot"></span>Мой уровень</button>
+      <button class="files-button" type="button" id="open-settings">{{ICON_GEAR}}Настройки ИИ</button>
+    </div>
+  </div>
+  <div class="progress" id="progress"><div class="progress-bar"><span id="progress-fill"></span></div><span id="progress-text">Решено 0 из 50</span></div>
+</header>
+
+{{THEORY}}
+
+{{GROUPS}}
+
+<footer class="app-footer"><p>Экономическая задача ЕГЭ · 50 задач по проекту «50 экономических задач» · решения и подсказки</p></footer>
+</main>
+
+<!-- ИИ-репетитор -->
+<aside class="tutor" id="tutor" hidden aria-label="ИИ-репетитор">
+  <header class="tutor-head">
+    <div class="tutor-title">
+      <strong>{{ICON_SPARK}}Репетитор</strong>
+      <span id="tutor-subtitle">Своя задача</span>
+    </div>
+    <span class="tutor-level" id="tutor-level" hidden></span>
+    <button class="icon-btn" type="button" id="tutor-restart" title="Начать заново">↺</button>
+    <button class="icon-btn" type="button" id="tutor-close" title="Закрыть">×</button>
+  </header>
+  <div class="tutor-log" id="tutor-log" aria-live="polite"></div>
+  <div class="tutor-quick" id="tutor-quick">
+    <button type="button" data-say="Дай подсказку, пожалуйста.">Подсказка</button>
+    <button type="button" data-say="Я не понимаю, объясни проще.">Не понимаю</button>
+    <button type="button" data-say="Проверь, пожалуйста, мои вычисления.">Проверь меня</button>
+    <button type="button" data-say="Я сдаюсь, покажи полное решение.">Покажи решение</button>
+  </div>
+  <form class="tutor-input" id="tutor-form">
+    <textarea id="tutor-text" rows="2" placeholder="Ваш ответ или вопрос… (Enter — отправить, Shift+Enter — новая строка)"></textarea>
+    <button type="submit" id="tutor-send" title="Отправить">➤</button>
+  </form>
+</aside>
+
+<!-- Настройки ИИ -->
+<dialog class="modal" id="settings">
+  <form method="dialog" class="modal-body" id="settings-form">
+    <h2>Настройки ИИ</h2>
+    <p class="muted">Подходит любой сервис с API, совместимым с OpenAI (<code>/chat/completions</code>). Ключ хранится только в этом браузере и отправляется только на адрес ниже.</p>
+    <label>Сервис
+      <select id="set-preset">
+        <option value="">Свой адрес</option>
+        <option value="https://openrouter.ai/api/v1">OpenRouter</option>
+        <option value="https://api.proxyapi.ru/openai/v1">ProxyAPI</option>
+        <option value="https://api.vsegpt.ru/v1">VseGPT</option>
+        <option value="https://api.openai.com/v1">OpenAI</option>
+        <option value="https://api.deepseek.com/v1">DeepSeek</option>
+      </select>
+    </label>
+    <label>Адрес API (base URL)<input type="url" id="set-url" placeholder="https://…/v1" required></label>
+    <label>Ключ API<input type="password" id="set-key" autocomplete="off" placeholder="sk-…" required></label>
+    <label>Модель<input type="text" id="set-model" placeholder="например, gpt-4o или anthropic/claude-sonnet-4.5" required></label>
+    <div class="modal-actions">
+      <button type="button" class="ghost" id="set-test">Проверить связь</button>
+      <span class="muted" id="set-status" role="status"></span>
+      <button type="button" class="ghost" id="set-cancel">Отмена</button>
+      <button type="submit" class="solid" id="set-save">Сохранить</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Профиль ученика -->
+<dialog class="modal" id="profile">
+  <div class="modal-body">
+    <h2>Мой уровень</h2>
+    <p class="muted">Репетитор оценивает уровень по ответам на вопросы перед задачей и по тому, как вы решаете. Оценки по типам задач:</p>
+    <div id="profile-body"></div>
+    <div class="modal-actions">
+      <button type="button" class="ghost danger" id="profile-reset">Сбросить прогресс</button>
+      <button type="button" class="solid" id="profile-close">Закрыть</button>
+    </div>
+  </div>
+</dialog>
+
+<script type="application/json" id="tasks-data">{{DATA}}</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/app.js"></script>
+</body>
+</html>
