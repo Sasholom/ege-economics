@@ -226,3 +226,11 @@ th{background:var(--mint);font-weight:700;color:var(--pine)}
  .tutor{left:0;width:auto}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.mode-switch{display:flex;gap:4px;padding:4px;margin:12px 0 4px;background:var(--page);border-radius:999px;border:1px solid var(--line)}
+.mode-switch label{flex:1;margin:0;display:block;cursor:pointer}
+.mode-switch input{position:absolute;opacity:0;pointer-events:none}
+.mode-switch span{display:block;text-align:center;padding:9px 12px;border-radius:999px;font-weight:700;font-size:14px;color:var(--muted)}
+.mode-switch input:checked+span{background:var(--green);color:#fff}
+.mode-switch input:focus-visible+span{outline:3px solid var(--leaf);outline-offset:1px}
+.mode-pane[hidden]{display:none}
+.mode-pane .muted{margin-top:10px}

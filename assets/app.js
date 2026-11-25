@@ -13,7 +13,8 @@ const store = {
   set(k, v) { try { localStorage.setItem('eco-' + k, JSON.stringify(v)); } catch (e) {} },
   del(k) { try { localStorage.removeItem('eco-' + k); } catch (e) {} },
 };
-const settings = () => store.get('settings', {url: '', key: '', model: ''});
+const settings = () => Object.assign({mode: 'builtin', code: '', url: '', key: '', model: ''}, store.get('settings', {}));
+const isReady = s => s.mode === 'own' ? !!(s.url && s.key && s.model) : !!s.code;
 const profile = () => store.get('profile', {types: {}, note: ''});
 const solved = () => new Set(store.get('solved', []));
 
@@ -98,8 +99,16 @@ paintProgress();
 
 /* ------------------------------------------------------------ настройки */
 const dlg = $('#settings');
+const modeRadios = [...document.querySelectorAll('input[name="ai-mode"]')];
+function showMode(mode) {
+  modeRadios.forEach(r => { r.checked = r.value === mode; });
+  document.querySelectorAll('.mode-pane').forEach(p => { p.hidden = p.dataset.mode !== mode; });
+}
+modeRadios.forEach(r => r.addEventListener('change', () => { showMode(r.value); $('#set-status').textContent = ''; }));
 function openSettings(msg) {
   const s = settings();
+  showMode(s.mode);
+  $('#set-code').value = s.code;
   $('#set-url').value = s.url; $('#set-key').value = s.key; $('#set-model').value = s.model;
   $('#set-preset').value = [...$('#set-preset').options].some(o => o.value === s.url) ? s.url : '';
   $('#set-status').textContent = msg || '';
@@ -108,11 +117,18 @@ function openSettings(msg) {
 $('#open-settings').onclick = () => openSettings();
 $('#set-cancel').onclick = () => dlg.close();
 $('#set-preset').onchange = e => { if (e.target.value) $('#set-url').value = e.target.value; };
-const readForm = () => ({url: $('#set-url').value.trim().replace(/\/+$/, '').replace(/\/chat\/completions$/, ''),
+const readForm = () => ({
+  mode: (modeRadios.find(r => r.checked) || {}).value || 'builtin',
+  code: $('#set-code').value.trim(),
+  url: $('#set-url').value.trim().replace(/\/+$/, '').replace(/\/chat\/completions$/, ''),
   key: $('#set-key').value.trim(), model: $('#set-model').value.trim()});
 $('#settings-form').addEventListener('submit', e => {
   const s = readForm();
-  if (!s.url || !s.key || !s.model) { e.preventDefault(); $('#set-status').textContent = 'Заполните все поля.'; return; }
+  if (!isReady(s)) {
+    e.preventDefault();
+    $('#set-status').textContent = s.mode === 'own' ? 'Заполните адрес, ключ и модель.' : 'Введите кодовое слово.';
+    return;
+  }
   store.set('settings', s);
 });
 $('#set-test').onclick = async () => {
@@ -144,19 +160,25 @@ $('#profile-reset').onclick = () => {
 
 /* ------------------------------------------------------------ ИИ */
 async function callAI(s, messages, onDelta, maxTokens) {
-  if (!s.url || !s.key || !s.model) throw new Error('Не настроен ИИ: откройте «Настройки ИИ».');
-  const body = {model: s.model, messages, stream: !!onDelta};
+  if (!isReady(s)) throw new Error('Не настроен ИИ: откройте «Настройки ИИ».');
+  const own = s.mode === 'own';
+  const body = {messages, stream: !!onDelta};
+  if (own) body.model = s.model;
   if (maxTokens) body.max_tokens = maxTokens;
   let res;
   try {
-    res = await fetch(s.url + '/chat/completions', {method: 'POST',
-      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + s.key}, body: JSON.stringify(body)});
+    res = await fetch(own ? s.url + '/chat/completions' : window.AI_PROXY, {method: 'POST',
+      headers: own ? {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + s.key}
+                   : {'Content-Type': 'application/json', 'X-Access-Code': encodeURIComponent(s.code)},
+      body: JSON.stringify(body)});
   } catch (e) {
-    throw new Error('Сервис не отвечает или не пускает запросы из браузера (CORS). Проверьте адрес API.');
+    throw new Error(own ? 'Сервис не отвечает или не пускает запросы из браузера (CORS). Проверьте адрес API.'
+                        : 'Сервер репетитора не отвечает. Проверьте интернет и попробуйте ещё раз.');
   }
   if (!res.ok) {
     let t = await res.text();
     try { const j = JSON.parse(t); t = (j.error && (j.error.message || j.error)) || j.message || t; } catch (e) {}
+    if (res.status === 401 && !own) throw new Error('Неверное кодовое слово. Исправьте его в «Настройках ИИ».');
     throw new Error(`Ошибка ${res.status}: ${String(t).slice(0, 300)}`);
   }
   const ctype = res.headers.get('content-type') || '';
@@ -354,8 +376,9 @@ function systemPrompt() { return chat.task ? taskPrompt(chat.task) : freePrompt(
 async function send(content, hidden) {
   if (busy || !content.trim()) return;
   const s = settings();
-  if (!s.key) {
-    const b = bubble('sys', 'Чтобы репетитор заработал, укажите сервис, ключ и модель.<br><button class="solid" type="button">Открыть настройки ИИ</button>');
+  if (!isReady(s)) {
+    const b = bubble('sys', (s.mode === 'own' ? 'Укажите сервис, ключ и модель.' : 'Введите кодовое слово, чтобы включить репетитора.')
+      + '<br><button class="solid" type="button">Открыть настройки ИИ</button>');
     b.querySelector('button').onclick = () => openSettings();
     return;
   }

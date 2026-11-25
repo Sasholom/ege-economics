@@ -70,6 +70,15 @@
 <dialog class="modal" id="settings">
   <form method="dialog" class="modal-body" id="settings-form">
     <h2>Настройки ИИ</h2>
+    <div class="mode-switch" role="radiogroup" aria-label="Режим">
+      <label><input type="radio" name="ai-mode" value="builtin" checked><span>Встроенный ИИ</span></label>
+      <label><input type="radio" name="ai-mode" value="own"><span>Свой ключ</span></label>
+    </div>
+    <div class="mode-pane" data-mode="builtin">
+      <p class="muted">Репетитор работает через сервер сайта — ключ вводить не нужно. Введите кодовое слово, браузер его запомнит.</p>
+      <label>Кодовое слово<input type="password" id="set-code" autocomplete="current-password" placeholder="кодовое слово"></label>
+    </div>
+    <div class="mode-pane" data-mode="own" hidden>
     <p class="muted">Подходит любой сервис с API, совместимым с OpenAI (<code>/chat/completions</code>). Ключ хранится только в этом браузере и отправляется только на адрес ниже.</p>
     <label>Сервис
       <select id="set-preset">
@@ -81,9 +90,10 @@
         <option value="https://api.deepseek.com/v1">DeepSeek</option>
       </select>
     </label>
-    <label>Адрес API (base URL)<input type="url" id="set-url" placeholder="https://…/v1" required></label>
-    <label>Ключ API<input type="password" id="set-key" autocomplete="off" placeholder="sk-…" required></label>
-    <label>Модель<input type="text" id="set-model" placeholder="например, gpt-4o или anthropic/claude-sonnet-4.5" required></label>
+    <label>Адрес API (base URL)<input type="url" id="set-url" placeholder="https://…/v1"></label>
+    <label>Ключ API<input type="password" id="set-key" autocomplete="off" placeholder="sk-…"></label>
+    <label>Модель<input type="text" id="set-model" placeholder="например, gpt-4o или anthropic/claude-sonnet-4.5"></label>
+    </div>
     <div class="modal-actions">
       <button type="button" class="ghost" id="set-test">Проверить связь</button>
       <span class="muted" id="set-status" role="status"></span>
@@ -106,6 +116,7 @@
   </div>
 </dialog>
 
+<script>window.AI_PROXY = 'https://ege-economics-ai.vercel.app/api/chat';</script>
 <script type="application/json" id="tasks-data">{{DATA}}</script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
