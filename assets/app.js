@@ -25,6 +25,13 @@ const MATH = {delimiters: [
   throwOnError: false};
 function renderMath(el) { if (window.renderMathInElement) window.renderMathInElement(el, MATH); }
 
+/* ------------------------------------------------------------ тема */
+$('#theme-toggle').addEventListener('click', () => {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem('eco-theme', next); } catch (e) {}
+});
+
 /* ------------------------------------------------------------ страница */
 renderMath($('#app'));
 

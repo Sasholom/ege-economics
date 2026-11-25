@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<script>(function(){var t;try{t=localStorage.getItem("eco-theme")}catch(e){}if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t})();</script>
 <title>Экономическая задача — ЕГЭ профиль</title>
 <meta name="description" content="50 экономических задач ЕГЭ по профильной математике: теория, решения и ИИ-репетитор.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,6 +24,7 @@
         <button class="btn btn-lime" type="button" id="free-task">{{ICON_CHAT}}Своя задача с репетитором</button>
         <button class="btn btn-glass" type="button" id="open-profile"><span class="level-dot" id="level-dot"></span>Мой уровень</button>
         <button class="btn btn-glass" type="button" id="open-settings">{{ICON_GEAR}}Настройки ИИ</button>
+        <button class="btn btn-glass btn-icon" type="button" id="theme-toggle" aria-label="Переключить тему" title="Тёмная / светлая тема"><span class="ico-moon">{{ICON_MOON}}</span><span class="ico-sun">{{ICON_SUN}}</span></button>
       </div>
     </div>
     <div class="hero-card">
@@ -40,7 +43,7 @@
 <h2 class="section-title">Задачи по типам</h2>
 {{GROUPS}}
 </main>
-<footer class="app-footer"><p>Экономическая задача ЕГЭ · 50 задач по проекту «50 экономических задач»</p></footer>
+<footer class="app-footer"><p class="made-by">Сделано <b>SaSholom</b></p><p>Экономическая задача ЕГЭ · 50 задач по проекту «50 экономических задач»</p></footer>
 
 <!-- ИИ-репетитор -->
 <aside class="tutor" id="tutor" hidden aria-label="ИИ-репетитор">
