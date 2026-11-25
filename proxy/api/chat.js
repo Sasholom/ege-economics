@@ -11,6 +11,8 @@
 
 const DEFAULT_ORIGINS = ['https://sasholom.github.io', 'http://localhost:8765'];
 const MAX_CHARS = 150000;
+const MAX_IMAGE = 3_000_000;   // символов base64 на одно фото (~2,2 МБ)
+const MAX_IMAGES = 2;
 
 let day = '';
 let count = 0;
@@ -60,13 +62,34 @@ export default {
 
     let body;
     try { body = await request.json(); } catch { return fail(400, 'Некорректный запрос.', headers); }
+    let images = 0;
+    let textChars = 0;
+    const clean = c => {
+      if (typeof c === 'string') { textChars += c.length; return c; }
+      if (!Array.isArray(c)) return null;
+      const parts = [];
+      for (const p of c) {
+        if (p && p.type === 'text' && typeof p.text === 'string') {
+          textChars += p.text.length;
+          parts.push({ type: 'text', text: p.text });
+        } else if (p && p.type === 'image_url' && typeof p.image_url?.url === 'string'
+            && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(p.image_url.url)
+            && p.image_url.url.length <= MAX_IMAGE) {
+          images += 1;
+          parts.push({ type: 'image_url', image_url: { url: p.image_url.url } });
+        }
+      }
+      return parts.length ? parts : null;
+    };
     const messages = (Array.isArray(body.messages) ? body.messages : [])
-      .filter(m => m && ['system', 'user', 'assistant'].includes(m.role) && typeof m.content === 'string')
-      .map(m => ({ role: m.role, content: m.content }));
+      .filter(m => m && ['system', 'user', 'assistant'].includes(m.role))
+      .map(m => ({ role: m.role, content: clean(m.content) }))
+      .filter(m => m.content);
     if (!messages.length) return fail(400, 'Пустой диалог.', headers);
-    if (JSON.stringify(messages).length > MAX_CHARS) {
+    if (textChars > MAX_CHARS) {
       return fail(413, 'Диалог стал слишком длинным — начните его заново кнопкой ↺.', headers);
     }
+    if (images > MAX_IMAGES) return fail(413, 'Слишком много фото в одном запросе.', headers);
 
     const today = new Date().toISOString().slice(0, 10);
     if (today !== day) { day = today; count = 0; }

@@ -24,12 +24,13 @@
         <button class="btn btn-lime" type="button" id="free-task">{{ICON_CHAT}}Своя задача с репетитором</button>
         <button class="btn btn-glass" type="button" id="open-profile"><span class="level-dot" id="level-dot"></span>Мой уровень</button>
         <button class="btn btn-glass" type="button" id="open-settings">{{ICON_GEAR}}Настройки ИИ</button>
+        <a class="btn btn-glass" href="cheatsheet.html" target="_blank" rel="noopener">{{ICON_DOC}}Шпаргалка PDF</a>
         <button class="btn btn-glass btn-icon" type="button" id="theme-toggle" aria-label="Переключить тему" title="Тёмная / светлая тема"><span class="ico-moon">{{ICON_MOON}}</span><span class="ico-sun">{{ICON_SUN}}</span></button>
       </div>
     </div>
     <div class="hero-card">
       <div class="ring" id="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" class="ring-bg"/><circle cx="60" cy="60" r="52" class="ring-fg" id="ring-fg"/></svg><div class="ring-label"><b id="stat-solved">0</b><span>из 50</span></div></div>
-      <div class="hero-stats"><div><b>11</b><span>типов задач</span></div><div><b>6</b><span>тем теории</span></div></div>
+      <div class="hero-stats"><div><b>11</b><span>типов задач</span></div><div class="streak"><b id="stat-streak">0</b><span id="stat-streak-label">дней подряд</span></div></div>
       <div class="progress" id="progress"><div class="progress-bar"><span id="progress-fill"></span></div><span id="progress-text">Решено 0 из 50</span></div>
     </div>
   </div>
@@ -40,8 +41,24 @@
 
 {{THEORY}}
 
+<section class="review" id="review" hidden aria-labelledby="review-title">
+  <div class="review-head"><span class="review-icon" aria-hidden="true">🔁</span><div><h2 id="review-title">Пора повторить</h2><p class="muted" id="review-sub"></p></div></div>
+  <div class="review-list" id="review-list"></div>
+</section>
+
 <h2 class="section-title">Задачи по типам</h2>
+<div class="filters" id="filters">
+  <label class="search"><span class="sr-only">Поиск по задачам</span>{{ICON_SEARCH}}<input type="search" id="search" placeholder="Поиск: «вклад», «12,5%», «задача 16»…" autocomplete="off"></label>
+  <div class="filter-chips" role="group" aria-label="Фильтр">
+    <button type="button" data-filter="all" aria-pressed="true">Все</button>
+    <button type="button" data-filter="todo" aria-pressed="false">Нерешённые</button>
+    <button type="button" data-filter="done" aria-pressed="false">Решённые</button>
+    <button type="button" data-filter="review" aria-pressed="false">На повторении</button>
+  </div>
+  <span class="muted filter-count" id="filter-count"></span>
+</div>
 {{GROUPS}}
+<p class="no-results" id="no-results" hidden>Ничего не найдено. Попробуйте другое слово или сбросьте фильтр.</p>
 </main>
 <footer class="app-footer"><p class="made-by">Сделано <b>SaSholom</b></p><p>Экономическая задача ЕГЭ · 50 задач по проекту «50 экономических задач»</p></footer>
 
@@ -63,8 +80,12 @@
     <button type="button" data-say="Проверь, пожалуйста, мои вычисления.">Проверь меня</button>
     <button type="button" data-say="Я сдаюсь, покажи полное решение.">Покажи решение</button>
   </div>
+  <div class="attach" id="attach" hidden><img id="attach-img" alt="Фото к отправке"><span>Фото готово к отправке</span><button type="button" class="icon-btn" id="attach-remove" title="Убрать фото">×</button></div>
   <form class="tutor-input" id="tutor-form">
-    <textarea id="tutor-text" rows="2" placeholder="Ваш ответ или вопрос… (Enter — отправить, Shift+Enter — новая строка)"></textarea>
+    <input type="file" id="photo-input" accept="image/*" hidden>
+    <button type="button" class="tool-btn" id="tutor-photo" title="Прислать фото решения" aria-label="Прислать фото решения">{{ICON_CAMERA}}</button>
+    <textarea id="tutor-text" rows="2" placeholder="Ваш ответ или вопрос… (Enter — отправить)"></textarea>
+    <button type="button" class="tool-btn" id="tutor-mic" title="Сказать голосом" aria-label="Голосовой ввод" aria-pressed="false">{{ICON_MIC}}</button>
     <button type="submit" id="tutor-send" title="Отправить">➤</button>
   </form>
 </aside>
@@ -112,12 +133,23 @@
     <h2>Мой уровень</h2>
     <p class="muted">Репетитор оценивает уровень по ответам на вопросы перед задачей и по тому, как вы решаете. Оценки по типам задач:</p>
     <div id="profile-body"></div>
+    <h3 class="modal-sub">Достижения <span class="muted" id="ach-count"></span></h3>
+    <div class="ach-grid" id="ach-grid"></div>
+    <h3 class="modal-sub">Отчёт для репетитора или родителей</h3>
+    <p class="muted">Отчёт открывается по ссылке, данные зашиты прямо в неё и никуда не отправляются. Можно сохранить в PDF.</p>
+    <label class="name-field">Имя в отчёте<input type="text" id="student-name" placeholder="например, Саша" autocomplete="off"></label>
+    <div class="modal-actions">
+      <button type="button" class="ghost" id="report-copy">Скопировать ссылку</button>
+      <button type="button" class="solid" id="report-open">Открыть отчёт</button>
+    </div>
     <div class="modal-actions">
       <button type="button" class="ghost danger" id="profile-reset">Сбросить прогресс</button>
       <button type="button" class="solid" id="profile-close">Закрыть</button>
     </div>
   </div>
 </dialog>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
 
 <script>window.AI_PROXY = 'https://ege-economics-ai.vercel.app/api/chat';</script>
 <script type="application/json" id="tasks-data">{{DATA}}</script>
