@@ -116,14 +116,16 @@ th{background:var(--mint);font-weight:700;color:var(--pine)}
 .check-result:empty{display:none}
 .check-result.ok{color:var(--ok)}.check-result.bad{color:var(--bad)}
 
-.reveal-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-.reveal{flex:0 0 auto}
-.reveal[open]{flex:1 0 100%;order:1}
-.reveal>summary{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;background:var(--mint);color:var(--pine);font-weight:700;font-size:14px;cursor:pointer;list-style:none}
-.reveal>summary:hover{background:var(--mint2)}
-.reveal>summary svg{width:14px;height:14px;transition:transform .15s}
-.reveal[open]>summary{background:var(--pine);color:#fff}
-.reveal[open]>summary svg{transform:rotate(180deg)}
+.reveal-row{margin-top:4px}
+.reveal-tabs{display:flex;flex-wrap:wrap;gap:6px}
+.reveal-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border:0;border-radius:999px;background:var(--mint);color:var(--pine);font-weight:700;font-size:14px;cursor:pointer}
+.reveal-btn:hover{background:var(--mint2)}
+.reveal-btn svg{width:14px;height:14px;transition:transform .15s}
+.reveal-btn[aria-expanded="true"]{background:var(--pine);color:#fff}
+.reveal-btn[aria-expanded="true"] svg{transform:rotate(180deg)}
+[data-theme="dark"] .reveal-btn[aria-expanded="true"]{background:var(--lime);color:var(--forest)}
+.reveal-panel{margin-top:10px}
+.reveal-panel .answer{margin:0}
 .steps{padding:10px 0 6px 26px;margin:0}
 .steps li{padding-left:4px;margin:0 0 8px}
 .steps li::marker{color:var(--green);font-weight:800}
@@ -263,7 +265,6 @@ th{background:var(--mint);font-weight:700;color:var(--pine)}
 [data-theme="dark"] .answer-check button{background:var(--lime);color:var(--forest)}
 [data-theme="dark"] .tutor-start{background:var(--green)}
 [data-theme="dark"] .tutor-start:hover{background:#238451}
-[data-theme="dark"] .reveal[open]>summary{background:var(--lime);color:var(--forest)}
 [data-theme="dark"] .solid{background:var(--green)}
 [data-theme="dark"] .solid:hover{background:#238451}
 [data-theme="dark"] .ghost.danger{border-color:#5a2c22}

@@ -116,12 +116,20 @@ document.addEventListener('click', e => {
   hint.hidden = open;
 });
 
+// Кнопки «Как решать / Решение / Ответ» стоят в одном ряду, панели раскрываются под ними.
 // Открыл решение или ответ, не решив, — задача уходит на повторение.
-$$('.prototype .reveal').forEach(d => d.addEventListener('toggle', () => {
-  if (!d.open || d.dataset.kind === 'steps') return;
-  const n = +d.closest('.prototype').dataset.task;
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.reveal-btn');
+  if (!btn) return;
+  const row = btn.closest('.reveal-row');
+  const panel = row.querySelector(`:scope > .reveal-panel[data-panel="${btn.dataset.panel}"]`);
+  const open = btn.getAttribute('aria-expanded') !== 'true';
+  btn.setAttribute('aria-expanded', String(open));
+  panel.hidden = !open;
+  if (!open || btn.dataset.panel === 'steps' || btn.closest('.sim-card')) return;
+  const n = +btn.closest('.prototype').dataset.task;
   if (!solved().has(n)) { noteReveal(n); touchDay(); refresh(); }
-}));
+});
 
 function nums(s) {
   return (String(s).replace(/(\d)[\s  ](?=\d{3}\b)/g, '$1').match(/-?\d+(?:[.,]\d+)?/g) || [])
@@ -306,7 +314,7 @@ function showSimilar(n, exceptId) {
       <form class="answer-check"><input type="text" autocomplete="off" placeholder="Ваш ответ" aria-label="Ответ к задаче № ${it.id}"><button type="submit">Проверить</button><span class="check-result" role="status"></span></form>
       <button class="tutor-start sim-tutor" type="button">Решать с репетитором</button>
     </div>
-    <div class="reveal-row"><button type="button" class="chip-btn sim-more">Другая задача</button><details class="reveal"><summary>Ответ</summary><div class="answer">${esc(it.a)}</div></details></div>
+    <div class="reveal-row"><div class="reveal-tabs"><button type="button" class="chip-btn sim-more">Другая задача</button><button class="reveal-btn" type="button" data-panel="answer" aria-expanded="false">Ответ</button></div><div class="reveal-panel" data-panel="answer" hidden><div class="answer">${esc(it.a)}</div></div></div>
   </div>`;
   box.querySelector('.sim-close').onclick = () => { box.hidden = true; box.innerHTML = ''; };
   box.querySelector('.sim-more').onclick = () => showSimilar(n, it.id);

@@ -128,9 +128,14 @@ def task_article(n, group, t):
 <form class="answer-check" data-task="{n}"><input type="text" inputmode="decimal" autocomplete="off" placeholder="Ваш ответ" aria-label="Ваш ответ к задаче {n}"><button type="submit">Проверить</button><span class="check-result" role="status"></span></form>
 </div>
 <div class="reveal-row">
-<details class="reveal" data-kind="steps"><summary>{svg("chevron")}Как решать</summary><ol class="steps">{steps}</ol></details>
-<details class="reveal"><summary>{svg("chevron")}Решение</summary><div class="solution">{table}<ol class="sol-lines">{lines}</ol><p class="sol-tip">Нажмите на строку — появится пояснение.</p></div></details>
-<details class="reveal"><summary>{svg("chevron")}Ответ</summary><div class="answer">{rich(t["answer"])}</div></details>
+<div class="reveal-tabs">
+<button class="reveal-btn" type="button" data-panel="steps" aria-expanded="false" aria-controls="p{n}-steps">{svg("chevron")}Как решать</button>
+<button class="reveal-btn" type="button" data-panel="solution" aria-expanded="false" aria-controls="p{n}-solution">{svg("chevron")}Решение</button>
+<button class="reveal-btn" type="button" data-panel="answer" aria-expanded="false" aria-controls="p{n}-answer">{svg("chevron")}Ответ</button>
+</div>
+<div class="reveal-panel" id="p{n}-steps" data-panel="steps" hidden><ol class="steps">{steps}</ol></div>
+<div class="reveal-panel" id="p{n}-solution" data-panel="solution" hidden><div class="solution">{table}<ol class="sol-lines">{lines}</ol><p class="sol-tip">Нажмите на строку — появится пояснение.</p></div></div>
+<div class="reveal-panel" id="p{n}-answer" data-panel="answer" hidden><div class="answer">{rich(t["answer"])}</div></div>
 </div>
 <div class="similar" data-task="{n}" hidden></div>
 </article>'''
