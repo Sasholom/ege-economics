@@ -5,30 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Экономическая задача — ЕГЭ профиль</title>
 <meta name="description" content="50 экономических задач ЕГЭ по профильной математике: теория, решения и ИИ-репетитор.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Unbounded:wght@600;700&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-<main id="app">
 <header class="hero">
-  <div class="hero-heading"><h1>Экономическая задача</h1><span class="year-chip">ЕГЭ профиль</span></div>
-  <p class="hero-sub">50 задач в 11 типах: кредиты, вклады, оптимизация. Решайте сами или с ИИ-репетитором — он сначала проверит, что вы знаете по теме, и подстроится под ваш уровень.</p>
-  <div class="toolbar">
-    <button class="files-button primary" type="button" id="free-task">{{ICON_CHAT}}Своя задача с репетитором</button>
-    <div class="toolbar-right">
-      <button class="files-button" type="button" id="open-profile"><span class="level-dot" id="level-dot"></span>Мой уровень</button>
-      <button class="files-button" type="button" id="open-settings">{{ICON_GEAR}}Настройки ИИ</button>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <span class="kicker">ЕГЭ · профильная математика</span>
+      <h1>Экономическая задача</h1>
+      <p class="hero-sub">Кредиты, вклады и оптимизация — 50 задач с разбором. Решай сам или с ИИ-репетитором: он сначала спросит теорию, поймёт твой уровень и поведёт по шагам.</p>
+      <div class="hero-actions">
+        <button class="btn btn-lime" type="button" id="free-task">{{ICON_CHAT}}Своя задача с репетитором</button>
+        <button class="btn btn-glass" type="button" id="open-profile"><span class="level-dot" id="level-dot"></span>Мой уровень</button>
+        <button class="btn btn-glass" type="button" id="open-settings">{{ICON_GEAR}}Настройки ИИ</button>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="ring" id="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" class="ring-bg"/><circle cx="60" cy="60" r="52" class="ring-fg" id="ring-fg"/></svg><div class="ring-label"><b id="stat-solved">0</b><span>из 50</span></div></div>
+      <div class="hero-stats"><div><b>11</b><span>типов задач</span></div><div><b>6</b><span>тем теории</span></div></div>
+      <div class="progress" id="progress"><div class="progress-bar"><span id="progress-fill"></span></div><span id="progress-text">Решено 0 из 50</span></div>
     </div>
   </div>
-  <div class="progress" id="progress"><div class="progress-bar"><span id="progress-fill"></span></div><span id="progress-text">Решено 0 из 50</span></div>
 </header>
+
+<main id="app">
+<nav class="type-nav" aria-label="Типы задач">{{NAV}}</nav>
 
 {{THEORY}}
 
+<h2 class="section-title">Задачи по типам</h2>
 {{GROUPS}}
-
-<footer class="app-footer"><p>Экономическая задача ЕГЭ · 50 задач по проекту «50 экономических задач» · решения и подсказки</p></footer>
 </main>
+<footer class="app-footer"><p>Экономическая задача ЕГЭ · 50 задач по проекту «50 экономических задач»</p></footer>
 
 <!-- ИИ-репетитор -->
 <aside class="tutor" id="tutor" hidden aria-label="ИИ-репетитор">

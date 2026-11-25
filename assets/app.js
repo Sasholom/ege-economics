@@ -28,6 +28,13 @@ function renderMath(el) { if (window.renderMathInElement) window.renderMathInEle
 renderMath($('#app'));
 
 document.addEventListener('click', e => {
+  const chip = e.target.closest('.type-nav a');
+  if (chip) {
+    e.preventDefault();
+    const g = document.querySelector(chip.getAttribute('href'));
+    g.open = true; g.scrollIntoView({behavior: 'smooth', block: 'start'});
+    return;
+  }
   const line = e.target.closest('.sol-line');
   if (!line) return;
   const hint = line.nextElementSibling, open = line.getAttribute('aria-expanded') === 'true';
@@ -67,12 +74,18 @@ function paintProgress() {
   document.querySelectorAll('.prototype').forEach(a => a.classList.toggle('solved', s.has(+a.dataset.task)));
   $('#progress-fill').style.width = (s.size / TASKS.length * 100) + '%';
   $('#progress-text').textContent = `Решено ${s.size} из ${TASKS.length}`;
+  $('#stat-solved').textContent = s.size;
+  const C = 2 * Math.PI * 52;
+  $('#ring-fg').style.strokeDasharray = C;
+  $('#ring-fg').style.strokeDashoffset = C * (1 - s.size / TASKS.length);
   document.querySelectorAll('.task-group[data-group]').forEach(g => {
     const arts = [...g.querySelectorAll('.prototype')], done = arts.filter(a => s.has(+a.dataset.task)).length;
     const c = g.querySelector('.task-count');
     c.dataset.orig = c.dataset.orig || c.textContent;
     c.textContent = done ? `${done} / ${arts.length} решено` : c.dataset.orig;
     c.classList.toggle('done', done === arts.length);
+    const chip = document.querySelector(`.type-nav a[data-group="${g.dataset.group}"]`);
+    if (chip) chip.classList.toggle('done', done === arts.length);
   });
   const lv = overallLevel();
   $('#level-dot').dataset.level = lv || '';

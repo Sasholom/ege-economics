@@ -99,7 +99,7 @@ def theory_section():
         body += ''.join(block_html(p) for p in th['html'])
         cards.append(f'<article class="theory-card"><h3>{html.escape(th["title"])}</h3>{body}</article>')
     return ('<details class="task-group theory" id="theory">'
-            + summary('Теория', 'Всё, что нужно знать перед задачами')
+            + summary(svg('book'), 'Теория: всё, что нужно знать перед задачами')
             + f'<div class="task-content theory-grid">{"".join(cards)}</div></details>')
 
 
@@ -155,23 +155,29 @@ def theory_plain():
 
 
 def build():
-    groups, n = [], 0
+    groups, nav, n = [], [], 0
     for gi, g in enumerate(content.GROUPS, 1):
         arts = []
         for t in g['tasks']:
             n += 1
             arts.append(task_article(n, g, t))
         cnt = len(g['tasks'])
+        short = g['name'].replace('Кредит: ', '')
+        name = html.escape(short[:1].upper() + short[1:])
+        kind = 'Кредит' if g['name'].startswith('Кредит') else ''
         badge = f'<span class="task-count" data-group="{gi}">{cnt} задач{"и" if 2 <= cnt <= 4 else ""}</span>'
+        title = (f'<span class="kind">{kind}</span>' if kind else '') + name
         groups.append(f'<details class="task-group" id="type-{gi}" data-group="{gi}">'
-                      + summary(g['no'], html.escape(g['name']), badge)
+                      + summary(f'<small>тип</small>{gi}', title, badge)
                       + f'<div class="task-content">{"".join(arts)}</div></details>')
+        nav.append(f'<a href="#type-{gi}" data-group="{gi}"><b>{gi}</b>{name}</a>')
 
     data = json.dumps({'tasks': tasks_json(), 'theory': theory_plain()}, ensure_ascii=False)
     data = data.replace('</', '<\\/')
     tpl = (ROOT / 'template.html').read_text(encoding='utf-8')
     page = (tpl.replace('{{THEORY}}', theory_section())
                .replace('{{GROUPS}}', '\n'.join(groups))
+               .replace('{{NAV}}', ''.join(nav))
                .replace('{{DATA}}', data)
                .replace('{{ICON_SPARK}}', svg('spark'))
                .replace('{{ICON_CHAT}}', svg('chat'))
